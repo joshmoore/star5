@@ -6,7 +6,9 @@ import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.type.numeric.integer.ByteType;
 import org.junit.Test;
 import star5.MultiFileHDF5StorageDescriptor;
+import star5.Partition;
 import star5.StorageDescriptor;
+import star5.callbacks.PartitionCallback;
 
 public class TestCode {
 
@@ -15,7 +17,12 @@ public class TestCode {
         StorageDescriptor sd = new MultiFileHDF5StorageDescriptor("", "/tmp/test-x[%d-%d]-y[%d-%d]-z[%d-%d].h5",
                 "data", new long[]{512, 512, 5}, new int[]{256, 256, 5}, null);
         ArrayImg<ByteType, ByteArray> rai = ArrayImgs.bytes(1024, 1024, 10);
-        sd.saveRAI(rai);
+        sd.saveRAI(rai, new PartitionCallback(){
+            @Override
+            public void afterPartition(Partition partition) {
+                System.out.println(partition.getPath());
+            }
+        });
     }
 
 }

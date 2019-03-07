@@ -5,6 +5,7 @@ import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
+import star5.callbacks.Callback;
 
 
 import java.util.ArrayList;
@@ -120,6 +121,6 @@ public abstract class AbstractStorageDescriptor implements StorageDescriptor {
 
 
     @Override
-    public abstract <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai) throws Exception;
+    public abstract <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai, Callback... callbacks) throws Exception;
 
 }

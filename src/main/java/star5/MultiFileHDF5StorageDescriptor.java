@@ -9,6 +9,8 @@ import net.imglib2.view.Views;
 import org.janelia.saalfeldlab.n5.GzipCompression;
 import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Writer;
 import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
+import star5.callbacks.Callback;
+import star5.callbacks.CallbackHelper;
 
 /**
  * {@link AbstractStorageDescriptor} implementation which uses {@link N5HDF5Writer} to write
@@ -23,14 +25,21 @@ public class MultiFileHDF5StorageDescriptor extends AbstractStorageDescriptor {
 
 
     @Override
-    public <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai) throws Exception {
+    public <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai, Callback... callbacks) throws Exception {
+        CallbackHelper cb = new CallbackHelper(callbacks);
         long[] offset = new long[rai.numDimensions()];
         for (Partition p : getPartitions(rai)) {
-            N5HDF5Writer writer = new N5HDF5Writer(p.getPath(), p.getChunkSizes());
-            writer.createDataset("/test", p.getDimensions(), p.getChunkSizes(),
-                    N5Utils.dataType(Util.getTypeFromInterval(rai)),
-                    new GzipCompression());
-            N5Utils.saveBlock(Views.interval(rai, p.getInterval()), writer, "/test", offset);
+            cb.beforePartition(p);
+            try {
+                N5HDF5Writer writer = new N5HDF5Writer(p.getPath(), p.getChunkSizes());
+                writer.createDataset("/test", p.getDimensions(), p.getChunkSizes(),
+                        N5Utils.dataType(Util.getTypeFromInterval(rai)),
+                        new GzipCompression());
+                N5Utils.saveBlock(Views.interval(rai, p.getInterval()), writer, "/test", offset);
+                cb.afterPartition(p);
+            } catch (Throwable t) {
+                cb.failedPartition(p, t);
+            }
         }
     }
 

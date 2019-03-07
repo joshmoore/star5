@@ -1,12 +1,10 @@
 package star5;
 
-import net.imglib2.FinalInterval;
-import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
+import star5.callbacks.Callback;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,10 +31,11 @@ public interface StorageDescriptor {
     /**
      *
      * Internally calls {@link #getPartitions(RandomAccessibleInterval)}.
-     * @param rai non-null {@link RandomAccessibleInterval} representing the matrix to be saved
      * @param <T> type of each matrix cell
+     * @param rai non-null {@link RandomAccessibleInterval} representing the matrix to be saved
+     * @param callbacks zero or more {@link Callback} instances for handling the writing process
      * @throws Exception thrown if any errors occur during IO
      */
-    <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai) throws Exception;
+    <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai, Callback... callbacks) throws Exception;
 
 }

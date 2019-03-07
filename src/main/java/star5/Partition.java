@@ -10,7 +10,6 @@ import net.imglib2.Interval;
  */
 public interface Partition {
 
-
     /**
      * Total extent that this {@link Partition} covers.
      * @return non-null array matching the dimensionality of the overall matrix
