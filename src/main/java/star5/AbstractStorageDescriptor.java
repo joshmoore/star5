@@ -3,7 +3,13 @@ package star5;
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
+import net.imglib2.util.Util;
+import net.imglib2.view.Views;
+import org.janelia.saalfeldlab.n5.GzipCompression;
+import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Writer;
+import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,17 +35,20 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
         this.filters = filters;
     }
 
-    public class Partition {
+    public class InternalPartition implements Partition {
+
         Interval interval;
 
-        Partition(Interval interval) {
+        InternalPartition(Interval interval) {
             this.interval = interval;
         }
 
+        @Override
         public int[] blockSizes() {
             return chunkSizes;
         }
 
+        @Override
         public String getPath() {
             ArrayList<Long> intervals = new ArrayList<>();
             for (int d = 0; d < interval.numDimensions(); d++) {
@@ -50,12 +59,14 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
             return String.format(partitionPattern, intervals.toArray());
         }
 
+        @Override
         public long[] dimensions() {
             long[] dimensions = new long[interval.numDimensions()];
             interval.dimensions(dimensions);
             return dimensions;
         }
 
+        @Override
         public Interval interval() {
             return interval;
         }
@@ -68,6 +79,7 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
 
     }
 
+    @Override
     public <T extends Type<T>> List<Partition> getPartitions(RandomAccessibleInterval<T> rai) {
         int n = rai.numDimensions();
         long[] dimensions = new long[n];
@@ -89,7 +101,7 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
                 max[d2] = (partitionIndex[d2] + 1) * partitionSizes[d2] - 1;
             }
             Interval i = new FinalInterval(min, max);
-            partitions.add(new Partition(i));
+            partitions.add(new InternalPartition(i));
 
             for (d = 0; d < n; ++d) {
                 partitionIndex[d] += 1;
@@ -102,4 +114,16 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
         return partitions;
     }
 
+
+    @Override
+    public <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai) throws Exception {
+        long[] offset = new long[rai.numDimensions()];
+        for (Partition p : getPartitions(rai)) {
+            N5HDF5Writer writer = new N5HDF5Writer(p.getPath(), p.blockSizes());
+            writer.createDataset("/test", p.dimensions(), p.blockSizes(),
+                    N5Utils.dataType(Util.getTypeFromInterval(rai)),
+                    new GzipCompression());
+            N5Utils.saveBlock(Views.interval(rai, p.interval()), writer, "/test", offset);
+        }
+    }
 }
