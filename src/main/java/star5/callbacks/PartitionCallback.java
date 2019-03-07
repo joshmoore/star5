@@ -8,8 +8,6 @@ import star5.Partition;
  */
 public class PartitionCallback implements Callback {
 
-
-
     public void beforePartition(Partition partition) {
         // no-op TODO logging?
     }
@@ -23,7 +21,7 @@ public class PartitionCallback implements Callback {
     }
 
     @Override
-    public void registerWith(CallbackHelper helper) {
+    public void registerWith(Callbacks helper) {
         helper.add(this);
     }
 

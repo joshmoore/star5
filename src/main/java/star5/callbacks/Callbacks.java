@@ -5,11 +5,11 @@ import star5.Partition;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CallbackHelper implements PartitionInterface {
+public class Callbacks implements PartitionInterface {
 
     private List<PartitionCallback> partitions = new ArrayList<>();
 
-    public CallbackHelper(Callback...callbacks) {
+    public Callbacks(Callback...callbacks) {
         for (Callback cb : callbacks) {
             cb.registerWith(this);
         }
@@ -41,7 +41,7 @@ public class CallbackHelper implements PartitionInterface {
     }
 
     @Override
-    public void registerWith(CallbackHelper helper) {
+    public void registerWith(Callbacks helper) {
         throw new RuntimeException("Recursion");
     }
 

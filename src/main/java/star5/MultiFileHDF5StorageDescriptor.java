@@ -10,7 +10,7 @@ import org.janelia.saalfeldlab.n5.GzipCompression;
 import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Writer;
 import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
 import star5.callbacks.Callback;
-import star5.callbacks.CallbackHelper;
+import star5.callbacks.Callbacks;
 
 /**
  * {@link AbstractStorageDescriptor} implementation which uses {@link N5HDF5Writer} to write
@@ -26,7 +26,7 @@ public class MultiFileHDF5StorageDescriptor extends AbstractStorageDescriptor {
 
     @Override
     public <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai, Callback... callbacks) throws Exception {
-        CallbackHelper cb = new CallbackHelper(callbacks);
+        Callbacks cb = new Callbacks(callbacks);
         long[] offset = new long[rai.numDimensions()];
         for (Partition p : getPartitions(rai)) {
             cb.beforePartition(p);
