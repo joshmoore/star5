@@ -4,18 +4,66 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>foo</groupId>
+    <groupId>com.gitlab.openmicroscopy.incubator</groupId>
     <artifactId>star5</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <name>star5</name>
+    <description>Library for reading and writing multiple *5 formats like HDF5 and N5</description>
+    <url>https://gitlib.com/openmicroscopy/incubator/star5</url>
+    <inceptionYear>2019</inceptionYear>
+    <organization>
+        <name>TBD</name>
+        <url>TBD</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>Simplified BSD License</name>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <mailingLists>
+        <mailingList>
+            <name>Image SC Forum</name>
+            <archive>https://forum.imagej.sc/</archive>
+        </mailingList>
+    </mailingLists>
+
+    <properties>
+        <package-name>star5</package-name>
+
+        <license.licenseName>bsd_2</license.licenseName>
+        <license.projectName>Star5</license.projectName>
+        <license.organizationName>TBD</license.organizationName>
+        <license.copyrightOwners>TBD</license.copyrightOwners>
+
+        <enforcer.skip>true</enforcer.skip>
+    </properties>
+
+    <developers>
+        <developer>
+            <id>joshmoore</id>
+            <name>JoshMoore</name>
+            <url>https://github.com/joshmoore</url>
+            <roles>
+                <role>founder</role>
+                <role>lead</role>
+                <role>developer</role>
+                <role>debugger</role>
+                <role>reviewer</role>
+                <role>support</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+
 
     <parent>
         <groupId>org.scijava</groupId>
         <artifactId>pom-scijava</artifactId>
         <version>24.0.0</version>
     </parent>
-    <properties>
-        <enforcer.skip>true</enforcer.skip>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>args4j</groupId>
