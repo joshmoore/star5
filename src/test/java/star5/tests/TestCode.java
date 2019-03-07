@@ -14,7 +14,7 @@ public class TestCode {
     public void testFromRAI() throws Exception {
         StorageDescriptor sd = new MultiFileHDF5StorageDescriptor("", "/tmp/test-x[%d-%d]-y[%d-%d]-z[%d-%d].h5",
                 "data", new long[]{512, 512, 5}, new int[]{256, 256, 5}, null);
-        ArrayImg<ByteType, ByteArray> rai = ArrayImgs.bytes(new long[]{1024, 1024, 10});
+        ArrayImg<ByteType, ByteArray> rai = ArrayImgs.bytes(1024, 1024, 10);
         sd.saveRAI(rai);
     }
 

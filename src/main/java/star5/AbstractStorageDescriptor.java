@@ -5,23 +5,24 @@ import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
-import net.imglib2.util.Util;
-import net.imglib2.view.Views;
-import org.janelia.saalfeldlab.n5.GzipCompression;
-import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Writer;
-import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AbstractStorageDescriptor implements StorageDescriptor {
+/**
+ * Base class for {@link StorageDescriptor} implementations.
+ *
+ * Uses the {@link InternalPartition} inner class to reduce the
+ */
+public abstract class AbstractStorageDescriptor implements StorageDescriptor {
 
     private String header;
     private String partitionPattern;
     private String datasetPattern; // naming!
     private long[] partitionSizes;
     private int[] chunkSizes;
-    Object filters;
+    private Object filters;
 
     public AbstractStorageDescriptor(String header,
                               String partitionPattern, String datasetPattern,
@@ -35,16 +36,20 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
         this.filters = filters;
     }
 
-    public class InternalPartition implements Partition {
+    /**
+     * {@link Partition} implementation which has access to all of the inner variables of the containing
+     * {@link AbstractStorageDescriptor} instance.
+     */
+     private class InternalPartition implements Partition {
 
-        Interval interval;
+        private Interval interval;
 
         InternalPartition(Interval interval) {
             this.interval = interval;
         }
 
         @Override
-        public int[] blockSizes() {
+        public int[] getChunkSizes() {
             return chunkSizes;
         }
 
@@ -60,14 +65,14 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
         }
 
         @Override
-        public long[] dimensions() {
+        public long[] getDimensions() {
             long[] dimensions = new long[interval.numDimensions()];
             interval.dimensions(dimensions);
             return dimensions;
         }
 
         @Override
-        public Interval interval() {
+        public Interval getInterval() {
             return interval;
         }
 
@@ -75,7 +80,6 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
         public String toString() {
             return getPath();
         }
-
 
     }
 
@@ -91,7 +95,7 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
         }
 
         long[] partitionIndex = new long[n];
-        List<Partition> partitions = new ArrayList<Partition>();
+        List<Partition> partitions = new ArrayList<>();
         for (int d = 0; d < n; ) {
 
             long[] min = new long[n];
@@ -116,14 +120,6 @@ public class AbstractStorageDescriptor implements StorageDescriptor {
 
 
     @Override
-    public <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai) throws Exception {
-        long[] offset = new long[rai.numDimensions()];
-        for (Partition p : getPartitions(rai)) {
-            N5HDF5Writer writer = new N5HDF5Writer(p.getPath(), p.blockSizes());
-            writer.createDataset("/test", p.dimensions(), p.blockSizes(),
-                    N5Utils.dataType(Util.getTypeFromInterval(rai)),
-                    new GzipCompression());
-            N5Utils.saveBlock(Views.interval(rai, p.interval()), writer, "/test", offset);
-        }
-    }
+    public abstract <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai) throws Exception;
+
 }
