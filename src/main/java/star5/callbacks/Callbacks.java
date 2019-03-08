@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Callbacks implements PartitionInterface {
 
-    private List<PartitionCallback> partitions = new ArrayList<>();
+    private List<PartitionCallback> partitionCallbacks = new ArrayList<>();
 
     public Callbacks(Callback...callbacks) {
         for (Callback cb : callbacks) {
@@ -16,32 +16,32 @@ public class Callbacks implements PartitionInterface {
     }
 
     public void add(PartitionCallback cb) {
-        this.partitions.add(cb);
+        this.partitionCallbacks.add(cb);
     }
 
     @Override
     public void beforePartition(Partition partition) {
-        for (PartitionCallback cb : partitions) {
+        for (PartitionCallback cb : partitionCallbacks ) {
             cb.beforePartition(partition);
         }
     }
 
     @Override
     public void afterPartition(Partition partition) {
-        for (PartitionCallback cb : partitions) {
+        for (PartitionCallback cb : partitionCallbacks ) {
             cb.afterPartition(partition);
         }
     }
 
 
     public void failedPartition(Partition partition, Throwable throwable) {
-        for (PartitionCallback cb : partitions) {
+        for (PartitionCallback cb : partitionCallbacks ) {
             cb.failedPartition(partition, throwable);
         }
     }
 
     @Override
-    public void registerWith(Callbacks helper) {
+    public void registerWith(Callbacks callbacks) {
         throw new RuntimeException("Recursion");
     }
 
