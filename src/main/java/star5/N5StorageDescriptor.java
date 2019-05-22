@@ -7,6 +7,7 @@ import net.imglib2.type.NativeType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.janelia.saalfeldlab.n5.GzipCompression;
+import org.janelia.saalfeldlab.n5.N5FSWriter;
 import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Writer;
 import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
 import star5.callbacks.Callback;
@@ -19,15 +20,14 @@ import java.io.IOException;
  * {@link Views#interval(RandomAccessible, Interval)} wrapped {@link Partition} instances
  * to disk.
  */
-public class MultiFileHDF5StorageDescriptor extends AbstractStorageDescriptor {
-    public MultiFileHDF5StorageDescriptor(String header, String partitionPattern, String datasetPattern,
-                                          long[] partitionSize, int[] chunkSize, Object filters) {
+public class N5StorageDescriptor extends AbstractStorageDescriptor {
+    public N5StorageDescriptor(String header, String partitionPattern, String datasetPattern,
+                               long[] partitionSize, int[] chunkSize, Object filters) {
         super(header, partitionPattern, datasetPattern, partitionSize, chunkSize, filters);
     }
 
-    @Override
     public <T extends NativeType<T>> void handlePartition(RandomAccessibleInterval<T> rai, long[] offset, Partition p) throws IOException {
-        N5HDF5Writer writer = new N5HDF5Writer(p.getPath(), p.getChunkSizes());
+        N5FSWriter writer = new N5FSWriter(p.getPath());
         writer.createDataset("/test", p.getDimensions(), p.getChunkSizes(),
                 N5Utils.dataType(Util.getTypeFromInterval(rai)),
                 new GzipCompression());

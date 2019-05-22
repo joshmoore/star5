@@ -11,7 +11,7 @@ public interface PartitionInterface extends Callback {
 
     void afterPartition(Partition partition);
 
-    void failedPartition(Partition partition, Throwable throwable);
+    void failedPartition(Partition partition, Throwable throwable); // TODO add exception
 
 
 }

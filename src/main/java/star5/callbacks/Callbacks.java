@@ -5,6 +5,28 @@ import star5.Partition;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Helper registry of {@link Callback} instances.
+ *
+ * Methods which take a vararg of {@link Callback} instances should
+ * pass all instances to {@link Callbacks} to have them type checked.
+ *
+ * Example:
+ * <pre>
+ *     void myMethod(Callback...callbacks) {
+ *         Callbacks cb = new Callbacks(callbacks);
+ *         for (Partition p : getPartitions(...)) {
+ *             cb.beforePartition(p);
+ *             try {
+ *                 cb.afterPartition(p);
+ *             } catch (Throwable t) {
+ *                 cb.failedPartition(p, t);
+ *             }
+ *          }
+ *     }
+ * </pre>
+ *
+ */
 public class Callbacks implements PartitionInterface {
 
     private List<PartitionCallback> partitionCallbacks = new ArrayList<>();

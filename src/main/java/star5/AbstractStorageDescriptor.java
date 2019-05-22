@@ -6,8 +6,10 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import star5.callbacks.Callback;
+import star5.callbacks.Callbacks;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,7 +122,20 @@ public abstract class AbstractStorageDescriptor implements StorageDescriptor {
     }
 
 
-    @Override
-    public abstract <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai, Callback... callbacks) throws Exception;
+    public <T extends NativeType<T>> void saveRAI(RandomAccessibleInterval<T> rai, Callback... callbacks) throws Exception {
+        Callbacks cb = new Callbacks(callbacks);
+        long[] offset = new long[rai.numDimensions()];
+        for (Partition p : getPartitions(rai)) {
+            cb.beforePartition(p);
+            try {
+                handlePartition(rai, offset, p);
+                cb.afterPartition(p);
+            } catch (Throwable t) {
+                cb.failedPartition(p, t);
+            }
+        }
+    }
+
+    public abstract <T extends NativeType<T>> void handlePartition(RandomAccessibleInterval<T> rai, long[] offset, Partition p) throws IOException;
 
 }
