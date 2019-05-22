@@ -1,6 +1,7 @@
 package star5.callbacks;
 
 import star5.Partition;
+import star5.StorageDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,9 @@ import java.util.List;
  * </pre>
  *
  */
-public class Callbacks implements PartitionInterface {
+public class Callbacks implements FilesetInterface, PartitionInterface {
+
+    private List<FilesetCallback> filesetCallbacks = new ArrayList<>();
 
     private List<PartitionCallback> partitionCallbacks = new ArrayList<>();
 
@@ -39,6 +42,15 @@ public class Callbacks implements PartitionInterface {
 
     public void add(PartitionCallback cb) {
         this.partitionCallbacks.add(cb);
+    }
+
+    public void add(FilesetCallback cb) {
+        this.filesetCallbacks.add(cb);
+    }
+
+    @Override
+    public void registerWith(Callbacks callbacks) {
+        throw new RuntimeException("Recursion");
     }
 
     @Override
@@ -55,7 +67,7 @@ public class Callbacks implements PartitionInterface {
         }
     }
 
-
+    @Override
     public void failedPartition(Partition partition, Throwable throwable) {
         for (PartitionCallback cb : partitionCallbacks ) {
             cb.failedPartition(partition, throwable);
@@ -63,8 +75,24 @@ public class Callbacks implements PartitionInterface {
     }
 
     @Override
-    public void registerWith(Callbacks callbacks) {
-        throw new RuntimeException("Recursion");
+    public void beforeFileset(StorageDescriptor sd) {
+        for (FilesetCallback cb : filesetCallbacks) {
+            cb.beforeFileset(sd);
+        }
+    }
+
+    @Override
+    public void afterFileset(StorageDescriptor sd) {
+        for (FilesetCallback cb : filesetCallbacks) {
+            cb.afterFileset(sd);
+        }
+    }
+
+    @Override
+    public void failedFileset(StorageDescriptor sd, Throwable throwable) {
+        for (FilesetCallback cb : filesetCallbacks) {
+            cb.failedFileset(sd, throwable);
+        }
     }
 
 }
