@@ -9,8 +9,6 @@ import net.imglib2.view.Views;
 import org.janelia.saalfeldlab.n5.GzipCompression;
 import org.janelia.saalfeldlab.n5.hdf5.N5HDF5Writer;
 import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
-import star5.callbacks.Callback;
-import star5.callbacks.Callbacks;
 
 import java.io.IOException;
 
@@ -27,6 +25,9 @@ public class MultiFileHDF5StorageDescriptor extends AbstractStorageDescriptor {
 
     @Override
     public <T extends NativeType<T>> void handlePartition(RandomAccessibleInterval<T> rai, long[] offset, Partition p) throws IOException {
+
+        // TODO: add header on completion
+
         N5HDF5Writer writer = new N5HDF5Writer(p.getPath(), p.getChunkSizes());
         writer.createDataset("/test", p.getDimensions(), p.getChunkSizes(),
                 N5Utils.dataType(Util.getTypeFromInterval(rai)),

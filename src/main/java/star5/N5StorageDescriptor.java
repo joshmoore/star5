@@ -16,11 +16,14 @@ import star5.callbacks.Callbacks;
 import java.io.IOException;
 
 /**
- * {@link AbstractStorageDescriptor} implementation which uses {@link N5HDF5Writer} to write
+ * {@link AbstractStorageDescriptor} implementation which uses {@link N5FSWriter} to write
  * {@link Views#interval(RandomAccessible, Interval)} wrapped {@link Partition} instances
  * to disk.
  */
 public class N5StorageDescriptor extends AbstractStorageDescriptor {
+
+    N5FSWriter writer; // FIXME: only one writer should be used!
+
     public N5StorageDescriptor(String header, String partitionPattern, String datasetPattern,
                                long[] partitionSize, int[] chunkSize, Object filters) {
         super(header, partitionPattern, datasetPattern, partitionSize, chunkSize, filters);
