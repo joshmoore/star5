@@ -17,7 +17,7 @@ import java.io.IOException;
  * {@link Views#interval(RandomAccessible, Interval)} wrapped {@link Partition} instances
  * to disk.
  */
-public class MultiFileHDF5StorageDescriptor extends AbstractStorageDescriptor {
+public class MultiFileHDF5StorageDescriptor extends AbstractPartitionedStorageDescriptor {
     public MultiFileHDF5StorageDescriptor(String header, String partitionPattern, String datasetPattern,
                                           long[] partitionSize, int[] chunkSize, Object filters) {
         super(header, partitionPattern, datasetPattern, partitionSize, chunkSize, filters);

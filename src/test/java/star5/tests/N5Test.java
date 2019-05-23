@@ -6,6 +6,7 @@ import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.type.numeric.integer.ByteType;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import star5.MultiFileHDF5StorageDescriptor;
 import star5.N5StorageDescriptor;
@@ -16,32 +17,20 @@ import star5.callbacks.PartitionCallback;
 import java.io.File;
 import java.io.IOException;
 
-public class TestCode {
+public class N5Test {
 
     @Rule
-    public TemporaryFolder temp = new TemporaryFolder();
+    public final TemporaryFolder temp = new TemporaryFolder();
 
-    String prefix() throws IOException {
-        return temp.newFolder().getAbsolutePath();
-    }
-    @Test()
-    public void testHDF5() throws Exception {
-        // TODO: store pattern metadata in files
-        runSD(new MultiFileHDF5StorageDescriptor(
-                "",
-                prefix() + "/test-xs%04d-xe%04d-ys%04d-ye%04d-zs%04d-ze%04d-cs%d-ce%d-ts%02d-te%02d.h5",
-                "data",
-                new long[]{1024, 1024, 5, 1, 1},
-                new int[]{256, 256, 5, 1, 1},
-                null));
-    }
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @Test()
-    public void testN5() throws Exception {
-
+    public void testThrowOnMultiFile() throws Exception {
+        exception.expect(Exception.class); // TODO: new type
         runSD(new N5StorageDescriptor(
                 "",
-                temp.newFolder("testN5.n5"),
+                temp.newFolder("N5Test.n5"),
                 "data",
                 new long[]{1024, 1024, 5, 1, 1},
                 new int[]{256, 256, 5, 1, 1},
